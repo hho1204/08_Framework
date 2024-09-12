@@ -109,10 +109,13 @@
   <h4 th:text="${std}">std 정보 출력</h4>
 
   <h4 th:text="${member} ?: _">member 없음</h4>
-  
+
   <!-- member가 없으면 이미지 출력 -->
   <h4 th:text="${member} ?: _">
     <img src="/images/logo.jpg">
   </h4>
+
+    <!-- footer.html 파일을 해당 위치에 출력 -->
+    <th:block th:replace= "~{fragments/footer}"></th:block>
 </body>
 </html>

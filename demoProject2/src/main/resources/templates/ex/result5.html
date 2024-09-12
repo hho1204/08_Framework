@@ -116,9 +116,14 @@
 
   <!-- fragments/temp.html에 있는 조각중 menu를 얻어와 삽입-->
 
-   <!--  fragment를 나타내는 Spring EL 기호 : ~(틸드) -->
+   <!--  fragment를 나타내는 Spring EL 기호 : ~(틸드) 
+
+   - 조각 경로 작성법
+   == forward 작성법 처럼 접두사, 접미사를 제외하고 작성
+-->
    <th:block th:insert= "~{path_to_location :: item_name }"></th:block>
 
-
+  <!-- footer.html 파일을 해당 위치에 출력 -->
+  <th:block th:replace= "~{fragments/footer}"></th:block>
 </body>
 </html>
