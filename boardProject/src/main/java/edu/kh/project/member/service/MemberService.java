@@ -11,4 +11,15 @@ public interface MemberService {
 	 */
 	Member login(String memberEmail, String memberPw);
 
+	int signUp(Member inputMember);
+	
+	
+	int emailCheck(String email);
+	
+	/** 닉네임 중복 검사
+	 * @param nickname
+	 * @return
+	 */
+	int nickCheck(String nickname);
+
 }
