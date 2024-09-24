@@ -17,4 +17,9 @@ public interface MyPageService {
 	 */
 	int checkNickname(String input);
 
+	int changePw(String currentPw, String newPw, Member loginMember);
+	
+	
+	int secession(String memberPw, Member loginMember);
+
 }

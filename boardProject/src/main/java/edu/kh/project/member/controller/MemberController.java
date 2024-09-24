@@ -126,6 +126,14 @@ public class MemberController {
 	}
 	
 	
+	/** 회원 가입 페이지 전환
+	 * @return
+	 */
+	@GetMapping("signUp")
+	public String signUp() {
+		return "member/signUp";
+	}
+	
 }
 
 
