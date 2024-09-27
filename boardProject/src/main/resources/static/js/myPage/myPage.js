@@ -190,12 +190,11 @@ updateInfo?.addEventListener("submit", e => {
     // 닉네임, 전화번호 중 유효하지 않은 값이 있을 경우
     if(checkObj[key] === false){
 
-      let str = "유효하지 않습니다";
+      let str = " 유효하지 않습니다";
 
       switch(key){
-        case "memberNickname": str =  "닉네임이"  + str; break;
+        case "memberNickname": str = "닉네임이"   + str; break;
         case "memberTel"     : str = "전화번호가" + str; break;
-          break;
       }
 
       alert(str); // OOO이 유효하지 않습니다 출력
@@ -203,34 +202,34 @@ updateInfo?.addEventListener("submit", e => {
       document.getElementById(key).focus(); // focus 맞추기
       return;
     }
+  } // for in end
 
-  } // FOR IN END
 
   /* 주소 유효성 검사 */
   // - 모두 작성   또는   모두 미작성
 
   const addr = document.querySelectorAll("[name = memberAddress]");
 
+  
   let empty = 0; // 비어있는 input의 개수
   let notEmpty = 0; // 비어있지 않은 input의 개수
 
-  // for ~ of 향상된 forans
-  for(let ad of addr){
+  // for ~ of 향상된 for문
+  for(let item of addr){
     let len = item.value.trim().length; // 작성된 값의 길이
-
+    
     if(len > 0) notEmpty++; // 비어있지 않은 경우
     else        empty++;    // 비어있을 경우
   }
 
   // empty, notEmpty 중 3이 하나도 없을 경우
-  if( empty !== 3&& notEmpty < 3)
-    alert("주소가 유효하지 않습니다(모두 작성 또는 미작성");
+  if( empty < 3 && notEmpty < 3 ){
+    alert("주소가 유효하지 않습니다(모두 작성 또는 미작성)");
     e.preventDefault();
     return;
+  }
+
 })
-
-
-
 
 
 
@@ -316,7 +315,8 @@ changePw?.addEventListener("submit", e => {
 
 });
 
-// -----------------------------------------------------------------------------------
+
+// --------------------------------------------------------------
 
 
 /* 회원 탈퇴 유효성 검사 */
@@ -347,6 +347,143 @@ secession?.addEventListener("submit", e => {
     e.preventDefault();
     return;
   }
-  
-
 });
+
+
+// --------------------------------------------------------
+
+/* ----- 프로필 이미지 미리보기, 삭제하기 ----- */
+
+// 프로필 이미지 업로드 상태에 따라서 어떤 상태인지 구분하는 값
+// -1 : 프로필 이미지를 바꾼적이 없음(초기상태)
+//  0 : 프로필 이미지 삭제(X버튼 클릭)
+//  1 : 새 이미지 선택
+let statusCheck = -1; 
+
+let lastVaildFile = null; // 마지막으로 선택된 파일을 저장할 변수
+
+// 미리보기가 출력될 img
+const profileImg = document.querySelector("#profileImg");
+
+// 프로필 이미지를 선택할 input
+const imageInput = document.querySelector("#imageInput");
+
+// 기본 이미지로 변경할 x버튼
+const deleteImage = document.querySelector("#deleteImage");
+
+
+if(imageInput != null){ // 프로필 변경 화면인 경우
+
+  /** 미리 보기 함수 
+   * @param file : input type="file"에서 선택된 파일
+  */
+  const updatePreview = (file) => {
+
+    lastVaildFile = file; // 선택된 파일을 lastVaildFile에 대입(복사)
+
+    // JS에서 제공하는 파읽을 읽어오는 객체
+    const reader = new FileReader();
+
+    // 파일을 읽어 오는데
+    // DataURL 형식으로 읽어옴
+    // DataURL: 파일 전체 데이터가 브라우저가 해석할 수 있는
+    //          긴 주소형태 문자열로 변환
+    reader.readAsDataURL(file);
+
+    // 선택된 파일이 다 인식 되었을 때
+    reader.addEventListener("load", e => {
+      profileImg.src = e.target.result;
+      // e.target.result == 파일이 변환된 주소 형태 문자열
+
+      statusCheck = 1; // 새 파일이 선택된 상태 체크
+    })
+  }
+
+
+  /* input type="file" 태그가 선택한 값이 변한 경우 수행 */
+  imageInput.addEventListener("change", e => {
+
+    // 선택된 파일 1개를 얻어옴
+    const file = e.target.files[0];
+
+    // 선택된 파일이 없을 경우
+    if(file === undefined){
+      
+      /* 이전 선택한 파일 유지하는 코드 */
+      // -> 이전 선택한 파일을 저장할 전역 변수(lastVaildFile) 선언
+
+      // 이전에 선택한 파일이 없는 경우
+      // == 현재 페이지 들어와서 프로필 이미지 바꾼적이 없는 경우
+      if(lastVaildFile === null) return;
+
+
+      // 이전에 선택한 파일이 "있을" 경우
+
+      const dataTransfer = new DataTransfer();
+
+      // DataTransfer가 가지고 있는 files 필드에 
+      // lastVaildFile 추가 
+      dataTransfer.items.add(lastVaildFile);
+
+      // input의 files 변수에 lastVaildFile이 추가된 files 대입
+      imageInput.files = dataTransfer.files;
+
+      // 이전 선택된 파일로 미리보기 되돌리기
+      updatePreview(lastVaildFile); 
+
+      return;
+    }
+
+    // 선택된 파일이 있을 경우
+    updatePreview(file); // 미리보기 함수 호출
+  })
+
+
+
+  /* X버튼 클릭 시 기본 이미지로 변환 */
+  deleteImage.addEventListener("click", () => {
+
+    // 미리 보기를 기본 이미지로 변경
+    profileImg.src = userDefaultImage;
+
+    // input 태그와 
+    // 마지막 선택된 파일을 저장하는 lastValidFile에
+    // 저장된 값을 모두 삭제
+    imageInput.value = '';
+    lastVaildFile = null;
+
+    statusCheck = 0; // 삭제 상태 체크
+  });
+
+}
+
+/* 프로필 화면에서 변경하기 버튼이 클릭된 경우 */
+const profileForm = document.querySelector("#profile");
+
+profileForm?.addEventListener("submit", e => {
+
+  let flag = true; // true인 경우 제출 불가능
+
+  // 미변경 시 제출 불가
+  if(statusCheck === -1) flag = true;
+
+  // 기존 프로필 이미지 X -> 새 이미지 선택 
+  if(loginMemberProfileImg === null 
+     && statusCheck === 1)  flag = false;
+
+  // 기존 프로필 이미지 O -> x버튼을 눌럭 삭제
+  if(loginMemberProfileImg !== null 
+     && statusCheck === 0)  flag = false;
+  
+  // 기존 프로필 이미지 O -> 새 이미 선택
+  if(loginMemberProfileImg !== null 
+     && statusCheck === 1)  flag = false;
+
+
+  if(flag === true){
+    e.preventDefault();
+    alert("이미지 변경 후 클릭하세요");
+  }
+
+})
+
