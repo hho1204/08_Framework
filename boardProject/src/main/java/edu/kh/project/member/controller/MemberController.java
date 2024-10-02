@@ -180,7 +180,7 @@ public class MemberController {
 	 * @return 0 : 중복 x, 1 : 중복 O
 	 */
 	@ResponseBody 
-	@GetMapping("nickCheck")
+	@GetMapping("nicknameCheck")
 	public int nickCheck(
 		@RequestParam("nickname") String Nickname) {
 		return service.nickCheck(Nickname);
