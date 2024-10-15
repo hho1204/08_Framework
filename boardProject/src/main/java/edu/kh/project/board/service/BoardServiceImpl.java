@@ -1,3 +1,4 @@
+
 package edu.kh.project.board.service;
 
 import java.util.HashMap;
@@ -68,7 +69,8 @@ public class BoardServiceImpl implements BoardService{
 		
 		return map;
 	}
-
+	
+	
 	// 게시글 상세조회
 	@Override
 	public Board selectDetail(Map<String, Integer> map) {
@@ -87,12 +89,11 @@ public class BoardServiceImpl implements BoardService{
 		 *    
 		 *    service -> mapper(select 연속 수행) -> DB
 		 */
-		
 		return mapper.selectDetail(map);
 	}
-
-	@Override
+	
 	// 조회 수 1 증가
+	@Override
 	public int updateReadCount(int boardNo) {
 		return mapper.updateReadCount(boardNo);
 	}
@@ -101,7 +102,7 @@ public class BoardServiceImpl implements BoardService{
 	@Override
 	public Map<String, Object> boardLike(int boardNo, int memberNo) {
 		
-		// 1. 좋아요 누른적 있는지 검사
+		// 1. 좋아요 누른적있어? 검사
 		int result = mapper.checkBoardLike(boardNo, memberNo);
 		
 		// result == 1 == 누른적 있음
@@ -109,7 +110,7 @@ public class BoardServiceImpl implements BoardService{
 		
 		// 2. 좋아요 여부에 따라 INSERT/DELETE Mapper 호출
 		int result2 = 0;
-		if(result==0) {
+		if(result == 0) {
 			result2 = mapper.insertBoardLike(boardNo, memberNo);
 		} else {
 			result2 = mapper.deleteBoardLike(boardNo, memberNo);
@@ -131,24 +132,59 @@ public class BoardServiceImpl implements BoardService{
 		if(result == 0) map.put("check", "insert");
 		else						map.put("check", "delete");
 		
-			
 		return map;
-		
 	}
 	
-//DB에서 모든 게시판 종류를 조회
+	
+	// DB에서 모든 게시판 종류를 조회
 	@Override
 	public List<Map<String, String>> selectBoardTypeList() {
 		return mapper.selectBoardTypeList();
 	}
-
+	
 	// 댓글 목록 조회
 	@Override
 	public List<Comment> selectCommentList(int boardNo) {
-	
 		return mapper.selectCommentList(boardNo);
 	}
 	
 	
+	// 검색 목록 조회
+	@Override
+	public Map<String, Object> selectSearchList(int boardCode, int cp, Map<String, Object> paramMap) {
+		
+		// 1. 지정된 게시판에서 검색 조건이 일치하는 게시글이 
+		//    몇 개나 존재하는지 조회
+		
+		paramMap.put("boardCode", boardCode); // boardCode도 paramMap에 추가
+		
+		int searchCount = mapper.getSearchCount(paramMap);
+		
+		
+	  // 2.Pagination 객체 생성하기 
+		Pagination pagination = new Pagination(cp, searchCount);
+		
+		//3. DB에서 cp(조회 하려는 페이지)에 해당하는 행을 조회
+		int limit = pagination.getLimit(); // 10
+		int offset = (cp - 1) * limit;
+		RowBounds rowBounds = new RowBounds(offset, limit);
+		
+		
+		// 4. 검색 결과 + Pagenation 객체를 Map으로 묶어서 반환
+		List<Board> boardList = mapper.selectSearchList(paramMap, rowBounds);
+		
+		Map<String, Object> map = new HashMap<>();
+		map.put("boardList", boardList);
+		map.put("pagination", pagination);
+		
+		return map;
+	}
+
+
+	@Override
+	public int getCurrentPage(Map<String, Object> paramMap) {
+	
+		return mapper.getCurrentPage(paramMap);
+	}
 	
 }
