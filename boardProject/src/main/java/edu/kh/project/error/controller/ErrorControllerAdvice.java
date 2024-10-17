@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /* @ControllerAdvice 어노테이션
  * - 프로젝트 전역(global)에서 발생하는 예외를 처리하는 
@@ -68,6 +69,15 @@ public class ErrorControllerAdvice {
 		return "error/400"; // 400 에러 페이지로 이동
 	}
 
+	
+	/** 요청 주소를 찾을 수 없을 경우 처리하는 메서드(404)
+	 * @return
+	 */
+	@ExceptionHandler(NoResourceFoundException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public String notFoundHandler() {
+		return "error/404";
+	}
 	
 	
 	

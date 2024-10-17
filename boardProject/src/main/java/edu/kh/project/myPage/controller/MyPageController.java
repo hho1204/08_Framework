@@ -271,7 +271,6 @@ public class MyPageController {
 		return "myPage/myPage-profile";
 	}
 	
-	
 	/** 로그인한 회원의 프로필 이미지 수정
 	 * @param profileImg : 제출된 이미지
 	 * @param loginMember : 로그인한 회원 정보
@@ -294,27 +293,15 @@ public class MyPageController {
 		// 3) 응답 처리
 		String message = null;
 		
-		if(filePath != null ) { // 변경 성공
-			message = "프로필 이미지가 변경되었습니다";
-					
-			// DB, Session에 저장된 프로필 이미지 정보 동기화
-			loginMember.setProfileImg(filePath);
-			
-		} else {
-			message = "변경 실패";
-		}
+		message = "프로필 이미지가 변경되었습니다";
+				
+		// DB, Session에 저장된 프로필 이미지 정보 동기화
+		loginMember.setProfileImg(filePath);
 		
 		ra.addFlashAttribute("message", message);
 		
 		return "redirect:profile"; //  /myPage/profile (GET)
 	}
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
